@@ -1,4 +1,4 @@
-import { demoData } from '../db/demoData'
+import { initialData } from '../db/initialData'
 import { agroDb } from '../db/database'
 
 const STORAGE_KEY = 'agrocuenta-data'
@@ -6,10 +6,10 @@ const STORAGE_KEY = 'agrocuenta-data'
 export function loadData() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
-    const data = saved ? JSON.parse(saved) : demoData
+    const data = saved ? JSON.parse(saved) : initialData
     return normalizeData(data)
   } catch {
-    return demoData
+    return normalizeData(initialData)
   }
 }
 
@@ -33,15 +33,12 @@ export async function hydrateData() {
 
 export function normalizeData(data) {
   return {
-    ...demoData,
+    ...initialData,
     ...data,
-    profile: { ...demoData.profile, ...data.profile },
-    crops: data.crops || demoData.crops,
-    movements: (data.movements || demoData.movements).map(movement => {
-      const demoMovement = demoData.movements.find(item => item.id === movement.id)
-      return demoMovement ? { ...demoMovement, ...movement, crop: movement.crop || demoMovement.crop } : movement
-    }),
-    inventory: data.inventory || demoData.inventory,
+    profile: { ...initialData.profile, ...data.profile },
+    crops: data.crops || [],
+    movements: data.movements || [],
+    inventory: data.inventory || [],
     production: data.production || [],
     inventoryHistory: data.inventoryHistory || []
   }

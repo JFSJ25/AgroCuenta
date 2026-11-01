@@ -1,5 +1,3 @@
-import jsPDF from 'jspdf'
-import autoTable from 'jspdf-autotable'
 import { money } from '../utils/formatters'
 
 export function getReportData(data, period = 'month', reference = new Date()) {
@@ -28,8 +26,12 @@ export function getReportData(data, period = 'month', reference = new Date()) {
   return { ...data, movements, production, totals }
 }
 
-export function downloadReport({ data, totals, period = 'month' }) {
-  const document = new jsPDF()
+export async function downloadReport({ data, totals, period = 'month' }) {
+  const [{ default: JsPDF }, { default: autoTable }] = await Promise.all([
+    import('jspdf'),
+    import('jspdf-autotable')
+  ])
+  const document = new JsPDF()
   const profit = totals.income - totals.expense
   document.setFontSize(22)
   document.setTextColor(47, 125, 50)

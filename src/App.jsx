@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
 import { CheckCircle } from '@mui/icons-material'
-import { demoData } from './db/demoData'
 import { BottomNav } from './components/layout/BottomNav'
 import { TopBar } from './components/layout/TopBar'
 import { ExpenseForm } from './components/forms/ExpenseForm'
@@ -145,19 +144,6 @@ function App() {
     showNotice(direction === 'entry' ? 'Entrada registrada' : 'Salida registrada')
   }
 
-  const resetDemoData = () => {
-    if (
-      !window.confirm(
-        'Esto reemplazará tus datos actuales por los datos de demostración. ¿Deseas continuar?'
-      )
-    )
-      return
-    const nextData = structuredClone(demoData)
-    saveData(nextData)
-    setModal(null)
-    showNotice('Datos demo restaurados')
-  }
-
   const addProduction = production => {
     saveData({
       ...data,
@@ -202,7 +188,6 @@ function App() {
         {section === 'production' && (
           <Production
             data={data}
-            totals={totals}
             onAdd={() => setModal('production')}
             onDownloadReport={period => {
               const reportData = getReportData(data, period)
@@ -268,7 +253,6 @@ function App() {
         <OptionsMenu
           onClose={() => setModal(null)}
           onNavigate={setSection}
-          onReset={resetDemoData}
           onExport={() => { exportBackup(data); setModal(null) }}
           onImport={handleImport}
         />

@@ -12,17 +12,21 @@ import { SimpleChart } from '../components/dashboard/SimpleChart'
 import { MovementList } from '../components/common/MovementList'
 import { money } from '../utils/formatters'
 
+const currentMonth = new Intl.DateTimeFormat('es-EC', { month: 'long' }).format(new Date())
+
 export function Dashboard({ totals, data, onRegister, onNavigate }) {
   const profit = totals.income - totals.expense
+  const productionQuantity = data.production.reduce((sum, item) => sum + item.quantity, 0)
+  const producer = data.profile.producer || 'tu finca'
   return (
     <section>
       <div className="welcome-row">
         <div>
-          <p className="eyebrow">Buenos días, Carlos</p>
+          <p className="eyebrow">Buenos días, {producer}</p>
           <h1>Así va tu finca este mes</h1>
         </div>
         <div className="date-pill">
-          <CalendarToday fontSize="small" /> Octubre 2026
+          <CalendarToday fontSize="small" /> {currentMonth}
         </div>
       </div>
       <div className="metrics-grid">
@@ -47,7 +51,7 @@ export function Dashboard({ totals, data, onRegister, onNavigate }) {
         <Metric
           icon={<Agriculture />}
           label="Producción"
-          value="520 kg"
+          value={`${productionQuantity} kg`}
           tone="blue"
         />
       </div>

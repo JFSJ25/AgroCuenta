@@ -492,6 +492,7 @@ h2 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
+  align-items: stretch;
 }
 .inventory-card,
 .farm-card {
@@ -500,13 +501,20 @@ h2 {
   border-radius: 16px;
   background: #fff;
 }
+.inventory-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
 .inventory-title {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
-.inventory-title > div:nth-child(2) {
+.inventory-name {
   flex: 1;
+  min-width: 0;
 }
 .inventory-title strong,
 .inventory-title span {
@@ -566,6 +574,37 @@ h2 {
   display: flex;
   gap: 8px;
   margin-top: 20px;
+}
+.inventory-empty {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 38px 20px;
+  text-align: center;
+}
+.inventory-empty > svg {
+  width: 42px;
+  height: 42px;
+  color: var(--green);
+}
+.inventory-empty .muted {
+  max-width: 420px;
+  margin-bottom: 20px;
+}
+.inventory-history-list {
+  display: grid;
+}
+.inventory-history-panel .production-row {
+  min-width: 0;
+}
+.inventory-history-panel .movement-info {
+  min-width: 0;
+}
+.inventory-history-panel .movement-info span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .inventory-actions button {
   display: flex;
@@ -1135,6 +1174,41 @@ h2 {
   .production-grid,
   .crop-management-grid {
     grid-template-columns: 1fr;
+  }
+  .inventory-card {
+    padding: 16px;
+  }
+  .inventory-title {
+    gap: 8px;
+  }
+  .inventory-title strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .inventory-actions {
+    gap: 6px;
+  }
+  .inventory-actions button {
+    min-width: 0;
+    padding-inline: 2px;
+  }
+  .inventory-history-panel .panel-heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .inventory-history-panel .production-row {
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .inventory-history-panel .movement-info span {
+    white-space: normal;
+    line-height: 1.35;
+  }
+  .inventory-history-panel .production-row > .muted {
+    flex: 0 0 auto;
+    font-size: 11px;
   }
   .production-summary {
     grid-template-columns: 1fr;
