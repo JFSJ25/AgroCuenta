@@ -4,7 +4,7 @@ import { MovementList } from '../components/common/MovementList'
 import { TODAY } from '../utils/formatters'
 
 export function Movements({ data, filter, setFilter, onEdit, onDelete }) {
-  const [period, setPeriod] = useState('month')
+  const [period, setPeriod] = useState('all')
   const [showPeriods, setShowPeriods] = useState(false)
   const now = new Date(`${TODAY}T12:00:00`)
   const start = new Date(now)
