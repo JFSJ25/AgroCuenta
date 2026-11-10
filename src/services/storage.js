@@ -47,3 +47,11 @@ export function normalizeData(data) {
 export async function saveInventoryEvent(event) {
   await agroDb.inventoryHistory.put(event)
 }
+
+export async function clearStoredData() {
+  localStorage.removeItem(STORAGE_KEY)
+  await Promise.all([
+    agroDb.appState.clear(),
+    agroDb.inventoryHistory.clear()
+  ])
+}

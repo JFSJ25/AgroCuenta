@@ -14,17 +14,20 @@ const units = [
 ]
 const paymentMethods = ['Efectivo', 'Transferencia', 'Crédito', 'Otro']
 
-export function SaleForm({ crops, onClose, onSave }) {
-  const [form, setForm] = useState({
-    description: '',
-    crop: crops[0]?.name || '',
-    quantity: '',
-    unit: 'kg',
-    price: '',
-    buyer: '',
-    paymentMethod: 'Efectivo',
-    date: TODAY
-  })
+export function SaleForm({ crops, initialMovement, onClose, onSave }) {
+  const detailParts = initialMovement?.detail?.match(
+    /^([\d.]+)\s+(.+?)\s+·\s+\$?([\d.,]+)\/.+$/
+  )
+  const [form, setForm] = useState(() => ({
+    description: initialMovement?.description?.replace(/^Venta de /, '') || '',
+    crop: initialMovement?.crop || crops[0]?.name || '',
+    quantity: initialMovement?.quantity || detailParts?.[1] || '',
+    unit: initialMovement?.unit || detailParts?.[2] || 'kg',
+    price: initialMovement?.price || detailParts?.[3]?.replace(',', '.') || '',
+    buyer: initialMovement?.buyer || '',
+    paymentMethod: initialMovement?.paymentMethod || 'Efectivo',
+    date: initialMovement?.date || TODAY
+  }))
   const update = event =>
     setForm({ ...form, [event.target.name]: event.target.value })
   const total = (Number(form.quantity) || 0) * (Number(form.price) || 0)
@@ -35,11 +38,14 @@ export function SaleForm({ crops, onClose, onSave }) {
         onSubmit={event => {
           event.preventDefault()
           onSave({
+            ...initialMovement,
             ...form,
             type: 'income',
             category: 'Venta',
             description: `Venta de ${form.description}`,
             amount: total,
+            quantity: Number(form.quantity),
+            price: Number(form.price),
             detail: `${form.quantity} ${form.unit} · ${money(Number(form.price) || 0)}/${form.unit}`
           })
         }}
@@ -129,7 +135,7 @@ export function SaleForm({ crops, onClose, onSave }) {
           type="submit"
           disabled={!total}
         >
-          Guardar venta
+          {initialMovement ? 'Guardar cambios' : 'Guardar venta'}
         </button>
       </form>
     </Modal>

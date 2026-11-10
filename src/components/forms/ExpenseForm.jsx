@@ -16,23 +16,28 @@ const categories = [
   'Alimentación',
   'Otros'
 ]
-export function ExpenseForm({ crops, onClose, onSave }) {
-  const [form, setForm] = useState({
-    category: 'Fertilizantes',
-    description: '',
-    amount: '',
-    crop: crops[0]?.name || '',
-    date: TODAY
-  })
+export function ExpenseForm({ crops, initialMovement, onClose, onSave }) {
+  const [form, setForm] = useState(() => ({
+    category: initialMovement?.category || 'Fertilizantes',
+    description: initialMovement?.description || '',
+    amount: initialMovement?.amount || '',
+    crop: initialMovement?.crop || crops[0]?.name || '',
+    date: initialMovement?.date || TODAY
+  }))
   const update = event =>
     setForm({ ...form, [event.target.name]: event.target.value })
   return (
-    <Modal title="Registrar gasto" onClose={onClose}>
+    <Modal title='Registrar gasto' onClose={onClose}>
       <form
         className="modal-form"
         onSubmit={event => {
           event.preventDefault()
-          onSave({ ...form, type: 'expense', amount: Number(form.amount) })
+          onSave({
+            ...initialMovement,
+            ...form,
+            type: 'expense',
+            amount: Number(form.amount)
+          })
         }}
       >
         <label>
@@ -85,7 +90,7 @@ export function ExpenseForm({ crops, onClose, onSave }) {
           />
         </label>
         <button className="primary-button form-submit" type="submit">
-          Guardar gasto
+          {initialMovement ? 'Guardar cambios' : 'Guardar gasto'}
         </button>
       </form>
     </Modal>

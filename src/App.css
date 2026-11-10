@@ -328,6 +328,17 @@ h2 {
 .movement-row:last-child {
   border-bottom: 0;
 }
+.movement-actions {
+  display: flex;
+  gap: 2px;
+  margin-left: 4px;
+}
+.movement-actions .icon-button {
+  padding: 5px;
+}
+.movement-actions svg {
+  font-size: 18px;
+}
 .movement-symbol {
   display: grid;
   flex: 0 0 34px;

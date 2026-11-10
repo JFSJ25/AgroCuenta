@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { MovementList } from '../components/common/MovementList'
 import { TODAY } from '../utils/formatters'
 
-export function Movements({ data, filter, setFilter }) {
+export function Movements({ data, filter, setFilter, onEdit, onDelete }) {
   const [period, setPeriod] = useState('month')
   const [showPeriods, setShowPeriods] = useState(false)
   const now = new Date(`${TODAY}T12:00:00`)
@@ -76,7 +76,11 @@ export function Movements({ data, filter, setFilter }) {
         ))}
       </div>
       <div className="panel movements-panel">
-        <MovementList movements={movements} />
+        <MovementList
+          movements={movements}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       </div>
     </section>
   )

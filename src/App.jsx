@@ -16,7 +16,7 @@ import { Inventory } from './pages/Inventory'
 import { Movements } from './pages/Movements'
 import { Production } from './pages/Production'
 import { Crops } from './pages/Crops'
-import { hydrateData, loadData, persistData, saveInventoryEvent } from './services/storage'
+import { clearStoredData, hydrateData, loadData, persistData, saveInventoryEvent } from './services/storage'
 import { downloadReport, getReportData } from './services/report'
 import { exportBackup, importBackup } from './services/backup'
 import './App.css'
@@ -59,11 +59,28 @@ function App() {
     } catch (error) {
       showNotice(error.message)
     }
+
   }
 
   const showNotice = message => {
     setNotice(message)
     setTimeout(() => setNotice(''), 3500)
+  }
+
+  const clearAllData = async () => {
+    const confirmed = window.confirm(
+      'Esta acción eliminará permanentemente todos tus cultivos, movimientos, inventario, producción y datos del perfil. Esta acción no se puede deshacer. ¿Deseas continuar?'
+    )
+    if (!confirmed) return
+    try {
+      await clearStoredData()
+      setData(loadData())
+      setModal(null)
+      showNotice('Todos los datos fueron eliminados')
+    } catch (error) {
+      console.error('No se pudieron eliminar todos los datos.', error)
+      showNotice('No se pudieron eliminar los datos. Inténtalo nuevamente.')
+    }
   }
 
   const addMovement = movement => {
@@ -75,6 +92,33 @@ function App() {
     showNotice(
       `${movement.type === 'income' ? 'Venta' : 'Gasto'} guardado correctamente`
     )
+  }
+
+  const updateMovement = movement => {
+    saveData({
+      ...data,
+      movements: data.movements.map(current =>
+        current.id === movement.id ? movement : current
+      )
+    })
+    setModal(null)
+    showNotice('Movimiento actualizado correctamente')
+  }
+
+  const deleteMovement = movement => {
+    const action = movement.type === 'income' ? 'descontará' : 'reembolsará'
+    const confirmed = window.confirm(
+      `Esta acción ${action} ${movement.amount.toLocaleString('es-EC', {
+        style: 'currency',
+        currency: 'USD'
+      })} ${movement.type === 'income' ? 'de tus ingresos' : 'de tus gastos'}. ¿Deseas eliminar este movimiento?`
+    )
+    if (!confirmed) return
+    saveData({
+      ...data,
+      movements: data.movements.filter(current => current.id !== movement.id)
+    })
+    showNotice('Movimiento eliminado correctamente')
   }
 
   const addCrop = crop => {
@@ -173,6 +217,10 @@ function App() {
             data={data}
             filter={movementFilter}
             setFilter={setMovementFilter}
+            onEdit={movement =>
+              setModal({ type: 'movement-edit', movement })
+            }
+            onDelete={deleteMovement}
           />
         )}
         {section === 'inventory' && (
@@ -221,8 +269,24 @@ function App() {
       {modal === 'expense' && (
         <ExpenseForm crops={data.crops} onClose={() => setModal(null)} onSave={addMovement} />
       )}
+      {modal?.type === 'movement-edit' && modal.movement.type === 'expense' && (
+        <ExpenseForm
+          crops={data.crops}
+          initialMovement={modal.movement}
+          onClose={() => setModal(null)}
+          onSave={updateMovement}
+        />
+      )}
       {modal === 'sale' && (
         <SaleForm crops={data.crops} onClose={() => setModal(null)} onSave={addMovement} />
+      )}
+      {modal?.type === 'movement-edit' && modal.movement.type === 'income' && (
+        <SaleForm
+          crops={data.crops}
+          initialMovement={modal.movement}
+          onClose={() => setModal(null)}
+          onSave={updateMovement}
+        />
       )}
       {modal === 'inventory' && (
         <InventoryForm onClose={() => setModal(null)} onSave={addInventory} />
@@ -255,6 +319,7 @@ function App() {
           onNavigate={setSection}
           onExport={() => { exportBackup(data); setModal(null) }}
           onImport={handleImport}
+          onClearData={clearAllData}
         />
       )}
     </div>

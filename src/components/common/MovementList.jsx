@@ -1,7 +1,7 @@
-import { ArrowDownward, ArrowUpward } from '@mui/icons-material'
+import { ArrowDownward, ArrowUpward, Delete, Edit } from '@mui/icons-material'
 import { formatDate, money } from '../../utils/formatters'
 
-export function MovementList({ movements }) {
+export function MovementList({ movements, onEdit, onDelete }) {
   return (
     <div className="movement-list">
       {movements.map(movement => (
@@ -28,6 +28,28 @@ export function MovementList({ movements }) {
             {movement.type === 'income' ? '+' : '-'}
             {money(movement.amount)}
           </strong>
+          {(onEdit || onDelete) && (
+            <div className="movement-actions">
+              {onEdit && (
+                <button
+                  className="icon-button"
+                  onClick={() => onEdit(movement)}
+                  aria-label={`Editar ${movement.description}`}
+                >
+                  <Edit />
+                </button>
+              )}
+              {onDelete && (
+                <button
+                  className="icon-button danger-icon"
+                  onClick={() => onDelete(movement)}
+                  aria-label={`Eliminar ${movement.description}`}
+                >
+                  <Delete />
+                </button>
+              )}
+            </div>
+          )}
         </div>
       ))}
     </div>
